@@ -1,4 +1,4 @@
-esource "google_compute_network" "vpc_network" {
+resource "google_compute_network" "vpc_network" {
   name                    = "mon-premier-network"
   auto_create_subnetworks = false
   mtu                     = 1460
