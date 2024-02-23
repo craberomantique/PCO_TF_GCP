@@ -48,3 +48,55 @@ resource "google_compute_firewall" "ssh" {
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["ssh"]
 }
+
+resource "google_compute_firewall" "nginx-proxy-manager" {
+  name = "allow-nginx-proxy-manager"
+  allow {
+    ports    = ["42081"]
+    protocol = "tcp"
+  }
+  direction     = "INGRESS"
+  network       = google_compute_network.vpc_network.id
+  priority      = 1000
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["nginx-proxy-manager"]
+}
+
+resource "google_compute_firewall" "portainer" {
+  name = "allow-portainer"
+  allow {
+    ports    = ["42090"]
+    protocol = "tcp"
+  }
+  direction     = "INGRESS"
+  network       = google_compute_network.vpc_network.id
+  priority      = 1000
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["portainer"]
+}
+
+resource "google_compute_firewall" "kuma" {
+  name = "allow-kuma"
+  allow {
+    ports    = ["42031"]
+    protocol = "tcp"
+  }
+  direction     = "INGRESS"
+  network       = google_compute_network.vpc_network.id
+  priority      = 1000
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["kuma"]
+}
+
+resource "google_compute_firewall" "odoo17" {
+  name = "allow-odoo17"
+  allow {
+    ports    = ["42017"]
+    protocol = "tcp"
+  }
+  direction     = "INGRESS"
+  network       = google_compute_network.vpc_network.id
+  priority      = 1000
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["odoo17"]
+}
