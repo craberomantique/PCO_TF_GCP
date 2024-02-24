@@ -25,7 +25,7 @@ resource "google_compute_instance" "default" {
   }
 
   # Install prerequis
-  metadata_startup_script = "sudo apt-get update; sudo apt-get install docker docker-compose git curl -y"
+  metadata_startup_script = "sudo apt-get update; sudo apt-get install docker docker-compose git curl -y; sudo git clone https://github.com/craberomantique/Odoo-v17_Automatic-deployement-services.git; cd Odoo-v17_Automatic-deployement-services; sudo docker-compose up -d"
 
   network_interface {
     subnetwork = google_compute_subnetwork.default.id
