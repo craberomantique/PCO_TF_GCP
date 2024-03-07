@@ -1,5 +1,5 @@
 resource "google_compute_network" "vpc_network" {
-  name                    = "mon-premier-network"
+  name                    = "defaut"
   auto_create_subnetworks = false
   mtu                     = 1460
 }
@@ -25,7 +25,7 @@ resource "google_compute_instance" "default" {
   }
 
   # Install prerequis
-  metadata_startup_script = "sudo apt-get update; sudo apt-get install docker docker-compose git curl -y"
+  metadata_startup_script = "sudo apt-get update"
 
   network_interface {
     subnetwork = google_compute_subnetwork.default.id
@@ -37,66 +37,79 @@ resource "google_compute_instance" "default" {
 }
 #Firewall rule
 resource "google_compute_firewall" "ssh" {
-  name = "allow-ssh"
+  name    = "allow-ssh"
+  network = google_compute_network.vpc_network.name
   allow {
-    ports    = ["22"]
     protocol = "tcp"
+    ports    = ["22"]
   }
-  direction     = "INGRESS"
-  network       = google_compute_network.vpc_network.id
-  priority      = 1000
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["ssh"]
 }
 
-resource "google_compute_firewall" "nginx-proxy-manager" {
-  name = "allow-nginx-proxy-manager"
+resource "google_compute_firewall" "http" {
+  name    = "allow-http"
+  network = google_compute_network.vpc_network.name
   allow {
-    ports    = ["42081"]
     protocol = "tcp"
+    ports    = ["80"]
   }
-  direction     = "INGRESS"
-  network       = google_compute_network.vpc_network.id
-  priority      = 1000
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["http"]
+}
+
+resource "google_compute_firewall" "https" {
+  name    = "allow-https"
+  network = google_compute_network.vpc_network.name
+  allow {
+    protocol = "tcp"
+    ports    = ["443"]
+  }
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["https"]
+}
+resource "google_compute_firewall" "nginx_proxy_manager" {
+  name    = "allow-nginx-proxy-manager"
+  network = google_compute_network.vpc_network.name
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443", "42081"]
+  }
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["nginx-proxy-manager"]
 }
 
 resource "google_compute_firewall" "portainer" {
-  name = "allow-portainer"
+  name    = "allow-portainer"
+  network = google_compute_network.vpc_network.name
   allow {
-    ports    = ["42090"]
     protocol = "tcp"
+    ports    = ["42090"]
   }
-  direction     = "INGRESS"
-  network       = google_compute_network.vpc_network.id
-  priority      = 1000
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["portainer"]
 }
 
-resource "google_compute_firewall" "kuma" {
-  name = "allow-kuma"
+resource "google_compute_firewall" "uptime_kuma" {
+  name    = "allow-uptime-kuma"
+  network = google_compute_network.vpc_network.name
   allow {
-    ports    = ["42031"]
     protocol = "tcp"
+    ports    = ["42031"]
   }
-  direction     = "INGRESS"
-  network       = google_compute_network.vpc_network.id
-  priority      = 1000
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["kuma"]
+  target_tags   = ["uptime-kuma"]
 }
 
 resource "google_compute_firewall" "odoo17" {
-  name = "allow-odoo17"
+  name    = "allow-odoo17"
+  network = google_compute_network.vpc_network.name
   allow {
-    ports    = ["42017"]
     protocol = "tcp"
+    ports    = ["42017", "42018"]
   }
-  direction     = "INGRESS"
-  network       = google_compute_network.vpc_network.id
-  priority      = 1000
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["odoo17"]
 }
+
+
